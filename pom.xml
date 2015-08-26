@@ -31,11 +31,24 @@
     </developer>
   </developers>
 
-  <parent>
+ <!--   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
     <version>7</version>
-  </parent>
+  </parent> -->
+  
+	<distributionManagement>
+		<repository>
+			<id>ihtsdo-public-nexus</id>
+			<name>IHTSDO Public Nexus Releases</name>
+			<url>https://maven.ihtsdotools.org/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>ihtsdo-public-nexus</id>
+			<name>IHTSDO Public Nexus Snapshots</name>
+			<url>https://maven.ihtsdotools.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
   <dependencies>
 
