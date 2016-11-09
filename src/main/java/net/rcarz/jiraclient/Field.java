@@ -19,20 +19,14 @@
 
 package net.rcarz.jiraclient;
 
-import java.lang.Iterable;
-import java.lang.UnsupportedOperationException;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
+
 import java.sql.Timestamp;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONNull;
+import java.util.*;
 
 /**
  * Utility functions for translating between JSON and fields.
@@ -707,7 +701,7 @@ public final class Field {
                 json.put(ValueType.KEY.toString(), value.toString());
 
             return json.toString();
-        } else if (m.type.equals("string") || (m.type.equals("securitylevel"))) {
+        } else if (m.type.equals("string") || m.type.equals("securitylevel") || m.type.equals("option")) {
             if (value == null)
                 return "";
             else if (value instanceof List)
@@ -780,7 +774,18 @@ public final class Field {
         return new ValueTuple(ValueType.NAME, name);
     }
 
-    /**
+	/**
+	 * Create a value tuple with value type of value.
+	 *
+	 * @param name The value
+	 *
+	 * @return a value tuple
+	 */
+	public static ValueTuple valueByValue(String name) {
+		return new ValueTuple(ValueType.VALUE, name);
+	}
+
+	/**
      * Create a value tuple with value type of ID number.
      *
      * @param id The ID number value
