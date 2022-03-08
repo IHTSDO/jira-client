@@ -110,7 +110,17 @@ public class RestClient {
      */
     public URI buildURI(String path, Map<String, String> params) throws URISyntaxException {
         URIBuilder ub = new URIBuilder(uri);
-        ub.setPath(ub.getPath() + path);
+        String newPath = ub.getPath();
+        if (newPath != null) {
+            if (newPath.endsWith("/") && path.startsWith("/")) {
+                newPath += path.substring(1);
+            } else {
+                newPath = !newPath.endsWith("/") && !path.startsWith("/") ? newPath + "/" + path : newPath + path;
+            }
+        } else {
+            newPath = path.startsWith("/") ? path : "/" + path;
+        }
+        ub.setPath(newPath);
 
         if (params != null) {
             for (Map.Entry<String, String> ent : params.entrySet())
@@ -170,14 +180,8 @@ public class RestClient {
 
         if (payload != null) {
             StringEntity ent = null;
-
-            try {
-                ent = new StringEntity(payload, "UTF-8");
-                ent.setContentType("application/json");
-            } catch (UnsupportedEncodingException ex) {
-                /* utf-8 should always be supported... */
-            }
-
+            ent = new StringEntity(payload, "UTF-8");
+            ent.setContentType("application/json");
             req.addHeader("Content-Type", "application/json");
             req.setEntity(ent);
         }
