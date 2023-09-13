@@ -1,7 +1,7 @@
 package net.rcarz.jiraclient;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
@@ -129,8 +129,8 @@ public class IssueTest {
     public void testPlainTimeTracking() {
         Issue issue = new Issue(null,Utils.getTestIssue());
 
-        assertEquals(new Integer(144000), issue.getTimeEstimate());
-        assertEquals(new Integer(86400), issue.getTimeSpent());
+        assertEquals(Integer.valueOf(144000), issue.getTimeEstimate());
+        assertEquals(Integer.valueOf(86400), issue.getTimeSpent());
     }
 
     @Test

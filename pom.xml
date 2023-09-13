@@ -1,42 +1,43 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>net.rcarz</groupId>
-  <artifactId>jira-client</artifactId>
-  <version>0.6.4-IHTSDO</version>
-  <packaging>jar</packaging>
+	<parent>
+		<groupId>org.snomed</groupId>
+		<artifactId>snomed-parent-bom</artifactId>
+		<version>2.0.1-SNAPSHOT</version>
+	</parent>
 
-  <name>jira-client</name>
-  <description>A simple JIRA REST client</description>
-  <url>https://github.com/rcarz/jira-client</url>
+	<groupId>net.rcarz</groupId>
+	<artifactId>jira-client</artifactId>
+	<version>1.0.0-IHTSDO</version>
+	<packaging>jar</packaging>
 
-  <licenses>
-    <license>
-      <name>GNU Lesser General Public License (LGPL)</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+	<name>jira-client</name>
+	<description>A simple JIRA REST client</description>
+	<url>https://github.com/rcarz/jira-client</url>
 
-  <scm>
-    <url>https://github.com/rcarz/jira-client</url>
-    <connection>https://github.com/rcarz/jira-client</connection>
-  </scm>
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License (LGPL)</name>
+			<url>http://www.gnu.org/licenses/lgpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
-  <developers>
-    <developer>
-      <id>rcarz</id>
-      <name>Bob Carroll</name>
-      <email>bob.carroll@alum.rit.edu</email>
-    </developer>
-  </developers>
+	<scm>
+		<url>https://github.com/rcarz/jira-client</url>
+		<connection>https://github.com/rcarz/jira-client</connection>
+	</scm>
 
- <!--   <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>7</version>
-  </parent> -->
-  
+	<developers>
+		<developer>
+			<id>rcarz</id>
+			<name>Bob Carroll</name>
+			<email>bob.carroll@alum.rit.edu</email>
+		</developer>
+	</developers>
+
 	<distributionManagement>
 		<repository>
 			<id>ihtsdo-public-nexus</id>
@@ -50,60 +51,96 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-  <dependencies>
+	<repositories>
+		<repository>
+			<id>ihtsdo-releases</id>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<url>https://nexus3.ihtsdotools.org/repository/maven-releases/</url>
+		</repository>
+		<repository>
+			<id>ihtsdo-snapshots</id>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<url>https://nexus3.ihtsdotools.org/repository/maven-snapshots/</url>
+		</repository>
+	</repositories>
 
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.13</version>
-    </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.4</version>
+			<classifier>jdk15</classifier>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+		</dependency>
+	</dependencies>
 
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpmime</artifactId>
-      <version>4.2.5</version>
-    </dependency>
-
-    <dependency>
-      <groupId>net.sf.json-lib</groupId>
-      <artifactId>json-lib</artifactId>
-      <version>2.4</version>
-      <classifier>jdk15</classifier>
-    </dependency>
-
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>1.6.3</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>1.6.3</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>2.4.6</version>
-      <scope>test</scope>
-    </dependency>
-
-  </dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifestEntries>
+									<Add-Opens>java.base/java.lang java.base/java.util</Add-Opens>
+								</manifestEntries>
+							</archive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
