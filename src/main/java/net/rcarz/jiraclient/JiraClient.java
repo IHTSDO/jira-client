@@ -19,6 +19,14 @@
 
 package net.rcarz.jiraclient;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,16 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 /**
  * A simple JIRA REST client.
@@ -90,6 +88,25 @@ public class JiraClient {
             creds.initialize(restclient);
         }
     }
+
+    /**
+     * Creates a new project.
+     *
+     * @param createMetadata Project creation metadata
+     * @param sharedProjectId The shared template project ID. Null value is allowed
+     *
+     * @return a project instance
+     *
+     * @throws JiraException when something goes wrong
+     */
+    public Project createProject(JSONObject createMetadata, String sharedProjectId)
+            throws JiraException {
+        if (StringUtils.isNotBlank(sharedProjectId)) {
+            return Project.createShared(restclient, createMetadata, sharedProjectId);
+        }
+        return Project.create(restclient, createMetadata);
+    }
+
 
     /**
      * Creates a new issue in the given project.
@@ -421,7 +438,7 @@ public class JiraClient {
      * @throws JiraException when the search fails
      */
     public List<CustomFieldOption> getCustomFieldAllowedValues(String field, String project, String issueType) throws JiraException {
-        JSONObject createMetadata = (JSONObject) Issue.getCreateMetadata(restclient, project, issueType);
+        JSONObject createMetadata = Issue.getCreateMetadata(restclient, project, issueType);
         JSONObject fieldMetadata = (JSONObject) createMetadata.get(field);
         List<CustomFieldOption> customFieldOptions = Field.getResourceArray(
                 CustomFieldOption.class,
@@ -442,7 +459,7 @@ public class JiraClient {
      * @throws JiraException when the search fails
      */
     public List<Component> getComponentsAllowedValues(String project, String issueType) throws JiraException {
-        JSONObject createMetadata = (JSONObject) Issue.getCreateMetadata(restclient, project, issueType);
+        JSONObject createMetadata = Issue.getCreateMetadata(restclient, project, issueType);
         JSONObject fieldMetadata = (JSONObject) createMetadata.get(Field.COMPONENTS);
         List<Component> componentOptions = Field.getResourceArray(
                 Component.class,
@@ -559,7 +576,7 @@ public class JiraClient {
                 }
             }
 
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
                 result.add(new IssueHistory(record,list));
             }
         }
@@ -609,7 +626,7 @@ public class JiraClient {
         }
 
         params.put("expand","changelog.fields");
-        URI uri = restclient.buildURI(Issue.getBaseUri() + "issue/" + issue.id, params);
+        URI uri = restclient.buildURI(Resource.getBaseUri() + "issue/" + issue.id, params);
         return restclient.get(uri);
     }
 }

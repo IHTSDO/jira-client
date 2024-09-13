@@ -19,20 +19,23 @@
 
 package net.rcarz.jiraclient;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static net.rcarz.jiraclient.Resource.getBaseUri;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import static net.rcarz.jiraclient.Field.PROJECT;
 
 /**
  * Represents a JIRA project.
  */
 public class Project extends Resource {
+
+    public static final String JSON_MALFORMED_MSG = "JSON payload is malformed";
 
     private Map<String, String> avatarUrls = null;
     private String key = null;
@@ -83,6 +86,52 @@ public class Project extends Resource {
     }
 
     /**
+     * Creates a new project.
+     *
+     * @param restclient REST client instance
+     * @param createMetadata Project creation metadata
+     *
+     * @return a project instance
+     *
+     * @throws JiraException when something goes wrong
+     */
+    public static Project create(RestClient restclient, JSONObject createMetadata)
+            throws JiraException {
+        try {
+            restclient.post(getBaseUri() + PROJECT, createMetadata);
+        } catch (Exception ex) {
+            throw new JiraException("Failed to create project", ex);
+        }
+
+        return get(restclient, createMetadata.getString("key"));
+    }
+
+
+    /**
+     * Creates a new project with shared configuration.
+     *
+     * @param restclient REST client instance
+     * @param createMetadata Project creation metadata
+     * @param sharedProjectId The shared template project ID
+     *
+     * @return a project instance
+     *
+     * @throws JiraException when something goes wrong
+     */
+    public static Project createShared(RestClient restclient, JSONObject createMetadata, String sharedProjectId)
+            throws JiraException {
+        try {
+            String path = "/rest/project-templates/1.0/createshared/" + sharedProjectId;
+            restclient.post(path, createMetadata);
+        } catch (Exception ex) {
+            throw new JiraException("Failed to create project with shared configuration", ex);
+        }
+
+        return get(restclient, createMetadata.getString("key"));
+    }
+
+
+    /**
      * Retrieves the given project record.
      *
      * @param restclient REST client instance
@@ -104,7 +153,7 @@ public class Project extends Resource {
         }
 
         if (!(result instanceof JSONObject))
-            throw new JiraException("JSON payload is malformed");
+            throw new JiraException(JSON_MALFORMED_MSG);
 
         return new Project(restclient, (JSONObject)result);
     }
@@ -122,13 +171,13 @@ public class Project extends Resource {
         JSON result = null;
 
         try {
-            result = restclient.get(getBaseUri() + "project");
+            result = restclient.get(getBaseUri() + PROJECT);
         } catch (Exception ex) {
             throw new JiraException("Failed to retrieve projects", ex);
         }
 
         if (!(result instanceof JSONArray))
-            throw new JiraException("JSON payload is malformed");
+            throw new JiraException(JSON_MALFORMED_MSG);
 
         return Field.getResourceArray(Project.class, result, restclient);
     }
@@ -137,8 +186,8 @@ public class Project extends Resource {
         JSON result = null;
 
         try {			
-            Map<String, String> queryParams = new HashMap<String, String>();
-            queryParams.put("project", this.key);
+            Map<String, String> queryParams = new HashMap<>();
+            queryParams.put(PROJECT, this.key);
             URI searchUri = restclient.buildURI(getBaseUri() + "user/assignable/search", queryParams);
             result = restclient.get(searchUri);
         } catch (Exception ex) {
@@ -146,7 +195,7 @@ public class Project extends Resource {
         }
 
         if (!(result instanceof JSONArray))
-            throw new JiraException("JSON payload is malformed");
+            throw new JiraException(JSON_MALFORMED_MSG);
 
         return Field.getResourceArray(User.class, result, restclient);
     }
