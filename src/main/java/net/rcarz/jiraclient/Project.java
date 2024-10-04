@@ -19,11 +19,15 @@
 
 package net.rcarz.jiraclient;
 
+import com.google.gson.Gson;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +53,11 @@ public class Project extends Resource {
     private Map<String, String> roles = null;
     private ProjectCategory category = null;
     private String email = null;
+
+    private record RestExceptionResult(
+            List<String> errorMessages,
+            Map<String, String> errors
+    ) {}
 
     /**
      * Creates a project from a JSON payload.
@@ -123,8 +132,17 @@ public class Project extends Resource {
         try {
             String path = "/rest/project-templates/1.0/createshared/" + sharedProjectId;
             restclient.post(path, createMetadata);
-        } catch (Exception ex) {
-            throw new JiraException("Failed to create project with shared configuration", ex);
+        } catch (RestException ex) {
+            if (StringUtils.isNotBlank(ex.getHttpResult())) {
+                Gson gson = new Gson();
+                RestExceptionResult result = gson.fromJson(ex.getHttpResult() , RestExceptionResult.class);
+                if (!result.errors().isEmpty()) {
+                    throw new JiraException(String.join(" ", result.errors().values()));
+                }
+            }
+            throw new JiraException(ex.getMessage());
+        } catch (IOException | URISyntaxException ex) {
+            throw new JiraException(ex.getMessage());
         }
 
         return get(restclient, createMetadata.getString("key"));
